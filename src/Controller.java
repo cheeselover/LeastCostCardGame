@@ -46,8 +46,12 @@ public class Controller {
     private void addPlayer() {
         System.out.print("Enter the player's name (or '#' for a computer player): ");
         String name = in.nextLine();
-        if(name.equals("#")) this.game.addComputerPlayer();
-        else this.game.addHumanPlayer(name);
+
+        if(name.equals("#")) {
+            this.game.addComputerPlayer();
+            name = "Computer Player";
+        } else this.game.addHumanPlayer(name);
+
         System.out.println("Welcome, " + name + "!");
     }
 
@@ -72,19 +76,55 @@ public class Controller {
         int numPlayers = players.size();
         int turn = (Game.startingTurn) % numPlayers;
         Game.startingTurn = turn;
+        boolean running = true;
 
-        while(true) {
+        while(running) {
             Player current = players.get(turn);
             ArrayList<Card> hand = current.getHand();
 
+            // TODO: rework this
             System.out.println(current.getName() + "'s turn.");
-            System.out.println("(0) - Call");
-            for(int i = 0; i < hand.size(); i++) {
-                System.out.println("(" + String.valueOf(i + 1) + ") - " + hand.get(i).toString());
-            }
-            in.nextLine();
 
-            turn = (turn + 1) % numPlayers;
+            // -----Entering the player's play from the hand-----
+            System.out.println("-PLAY-");
+            System.out.println("(-1) - Call");
+            for(int i = 0; i < hand.size(); i++) {
+                System.out.println("(" + String.valueOf(i) + ") - " + hand.get(i).toString());
+            }
+
+            System.out.print("Enter your play (space separated numbers): ");
+            String[] line = in.nextLine().split(" ");
+            ArrayList<Integer> indexes = new ArrayList<>();
+
+            for(String s : line) {
+                int play = Integer.parseInt(s);
+                if(play == -1) {
+                    System.out.println("CALL!");
+                    running = false;
+                    break;
+                } else indexes.add(play);
+            }
+            //---------------------------------------------------
+
+            // ----Entering the player's pickup from the pile----
+            System.out.println("-PICKUP-");
+            System.out.println("(-1) - Draw from deck");
+
+            ArrayList<Card> availablePile = this.game.getAvaliablePile();
+            for(int i = 0; i < availablePile.size(); i++) {
+                System.out.println("(" + String.valueOf(i) + ") - " + availablePile.get(i).toString());
+            }
+
+            System.out.print("Enter the card to pickup: ");
+            if(this.game.makePlay(turn, indexes, Integer.parseInt(in.nextLine()))) {
+                System.out.println("Successful play!");
+                turn = (turn + 1) % numPlayers;
+            } else {
+                System.out.println("Invalid play, try again.");
+            }
+            //---------------------------------------------------
         }
+
+        System.out.println("Game over!\n--------------------");
     }
 }

@@ -44,7 +44,6 @@ public class Hand {
 
             return playedCards;
         } else {
-            System.out.println("GAME: Invalid play.");
             return null;
         }
     }

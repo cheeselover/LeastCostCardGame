@@ -15,6 +15,6 @@ public class HumanPlayer extends Player {
 
     @Override
     public ArrayList<Card> play(ArrayList<Integer> indexes) {
-        return null;
+        return this.hand.play(indexes);
     }
 }

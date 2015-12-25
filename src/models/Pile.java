@@ -25,10 +25,11 @@ public class Pile {
             cards.add(c);
         }
 
+        available.clear();
         return card;
     }
 
-    public void add(Card c) {
-        available.add(c);
-    }
+    public void add(ArrayList<Card> cards) { this.available = cards; }
+
+    public ArrayList<Card> getAvailable() { return this.available; }
 }

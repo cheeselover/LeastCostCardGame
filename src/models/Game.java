@@ -18,14 +18,6 @@ public class Game {
         pile = new Pile();
     }
 
-    public void addHumanPlayer(String name) {
-        players.add(new HumanPlayer(this, name));
-    }
-
-    public void addComputerPlayer() {
-        players.add(new ComputerPlayer(this));
-    }
-
     public void start() {
         deck.reset();
 
@@ -40,6 +32,20 @@ public class Game {
         pile.reset(deck.draw());
     }
 
+    public boolean makePlay(int playerIndex, ArrayList<Integer> playIndexes, int pickFromPile) {
+        Player current = this.players.get(playerIndex);
+        ArrayList<Card> playedCards = current.play(playIndexes);
+        if(playedCards == null) return false;
+
+        Card pickup;
+        if(pickFromPile == -1) pickup = this.deck.draw();
+        else pickup = this.pile.take(pickFromPile);
+        current.takeCard(pickup);
+
+        this.pile.add(playedCards);
+        return true;
+    }
+
     public ArrayList<Player> getPlayers() {
         return this.players;
     }
@@ -47,4 +53,14 @@ public class Game {
     public Player removePlayer(int index) {
         return this.players.remove(index);
     }
+
+    public void addHumanPlayer(String name) {
+        players.add(new HumanPlayer(this, name));
+    }
+
+    public void addComputerPlayer() {
+        players.add(new ComputerPlayer(this));
+    }
+
+    public ArrayList<Card> getAvaliablePile() { return this.pile.getAvailable(); }
 }

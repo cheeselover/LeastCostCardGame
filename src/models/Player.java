@@ -10,8 +10,8 @@ public abstract class Player {
 
     protected String name;
     protected boolean isHuman;
+    protected Hand hand;
     private int score;
-    private Hand hand;
 
     protected Player(Game game) {
         this.game = game;
@@ -19,9 +19,7 @@ public abstract class Player {
         this.hand = new Hand();
     }
 
-    public int getScore() {
-        return this.score;
-    }
+    public int getScore() { return this.score; }
 
     public void setScore(int score) {
         this.score = score;
@@ -39,11 +37,11 @@ public abstract class Player {
 
     public int getNumCards() { return this.hand.getNumCards(); }
 
-    public abstract ArrayList<Card> play(ArrayList<Integer> indexes);
-
     public void takeCard(Card c) { this.hand.add(c); }
 
     public void clearHand() { this.hand.reset(); }
 
     public ArrayList<Card> getHand() { return this.hand.getCards(); }
+
+    public abstract ArrayList<Card> play(ArrayList<Integer> indexes);
 }
