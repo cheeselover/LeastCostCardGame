@@ -45,4 +45,5 @@ public abstract class Player {
 
     public void clearHand() { this.hand.reset(); }
 
+    public ArrayList<Card> getHand() { return this.hand.getCards(); }
 }

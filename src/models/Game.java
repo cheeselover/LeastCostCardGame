@@ -10,6 +10,8 @@ public class Game {
     private Deck deck;
     private Pile pile;
 
+    public static int startingTurn = 0;
+
     public Game() {
         players = new ArrayList<>();
         deck = new Deck();
@@ -40,5 +42,9 @@ public class Game {
 
     public ArrayList<Player> getPlayers() {
         return this.players;
+    }
+
+    public Player removePlayer(int index) {
+        return this.players.remove(index);
     }
 }

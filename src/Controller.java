@@ -1,3 +1,4 @@
+import models.Card;
 import models.Game;
 import models.Player;
 
@@ -21,30 +22,31 @@ public class Controller {
         printMenu();
 
         System.out.print("Enter a command: ");
-        String input = in.next();
-        while(input != "q") {
-            if(input == "p") addPlayer();
-            else if(input == "r") removePlayer();
-            else if(input == "q") startGame();
+        int input = Integer.parseInt(in.nextLine());
+        while(input != 1) {
+            if(input == 2) printMenu();
+            else if(input == 3) addPlayer();
+            else if(input == 4) removePlayer();
+            else if(input == 5) startGame();
             else System.out.println("MENU: Invalid command.");
 
             System.out.print("Enter a command: ");
-            input = in.next();
+            input = Integer.parseInt(in.nextLine());
         }
     }
 
     private void printMenu() {
-        System.out.println("(q) - Quit");
-        System.out.println("(o) - Show menu");
-        System.out.println("(p) - Add player");
-        System.out.println("(r) - Remove player");
-        System.out.println("(g) - Start new game");
+        System.out.println("(1) - Quit");
+        System.out.println("(2) - Show menu");
+        System.out.println("(3) - Add player");
+        System.out.println("(4) - Remove player");
+        System.out.println("(5) - Start new game");
     }
 
     private void addPlayer() {
         System.out.print("Enter the player's name (or '#' for a computer player): ");
         String name = in.nextLine();
-        if(name == "#") this.game.addComputerPlayer();
+        if(name.equals("#")) this.game.addComputerPlayer();
         else this.game.addHumanPlayer(name);
         System.out.println("Welcome, " + name + "!");
     }
@@ -58,7 +60,31 @@ public class Controller {
         }
 
         System.out.print("Enter the number of the player to remove: ");
-        Player p = this.game.removePlayer(in.nextInt());
+        Player p = this.game.removePlayer(Integer.parseInt(in.nextLine()));
         System.out.println("Goodbye, " + p.getName() + "!");
+    }
+
+    private void startGame() {
+        System.out.println("Starting new game.\n--------------------");
+        this.game.start();
+
+        ArrayList<Player> players = this.game.getPlayers();
+        int numPlayers = players.size();
+        int turn = (Game.startingTurn) % numPlayers;
+        Game.startingTurn = turn;
+
+        while(true) {
+            Player current = players.get(turn);
+            ArrayList<Card> hand = current.getHand();
+
+            System.out.println(current.getName() + "'s turn.");
+            System.out.println("(0) - Call");
+            for(int i = 0; i < hand.size(); i++) {
+                System.out.println("(" + String.valueOf(i + 1) + ") - " + hand.get(i).toString());
+            }
+            in.nextLine();
+
+            turn = (turn + 1) % numPlayers;
+        }
     }
 }

@@ -88,4 +88,8 @@ public class Hand {
             return consecutiveOrder;
         }
     }
+
+    public ArrayList<Card> getCards() {
+        return this.cards;
+    }
 }
