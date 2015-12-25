@@ -19,17 +19,12 @@ public class Card {
         return this.value;
     }
 
-    public void setValue(int value) {
-        this.value = value;
-    }
-
     public int getSuit() {
         return this.suit;
     }
 
-    public void setSuit(int suit) {
-        this.suit = suit;
-    }
+    // for adding the score at the end
+    public int getPoints() { return (this.value > 10) ? 10 : this.value; }
 
     @Override
     public String toString() {

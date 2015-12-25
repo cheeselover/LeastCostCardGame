@@ -21,8 +21,8 @@ public abstract class Player {
 
     public int getScore() { return this.score; }
 
-    public void setScore(int score) {
-        this.score = score;
+    public void addScore(int score) {
+        this.score += score;
     }
 
     public String getName() {
@@ -42,6 +42,16 @@ public abstract class Player {
     public void clearHand() { this.hand.reset(); }
 
     public ArrayList<Card> getHand() { return this.hand.getCards(); }
+
+    public int calculatePoints() {
+        int sum = 0;
+
+        for(Card c : this.hand.getCards()) {
+            sum += c.getPoints();
+        }
+
+        return sum;
+    }
 
     public abstract ArrayList<Card> play(ArrayList<Integer> indexes);
 }

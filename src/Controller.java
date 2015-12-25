@@ -3,6 +3,8 @@ import models.Game;
 import models.Player;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Scanner;
 
 /**
@@ -27,7 +29,7 @@ public class Controller {
             if(input == 2) printMenu();
             else if(input == 3) addPlayer();
             else if(input == 4) removePlayer();
-            else if(input == 5) startGame();
+            else if(input == 5) startNewGame();
             else System.out.println("MENU: Invalid command.");
 
             System.out.print("Enter a command: ");
@@ -41,6 +43,22 @@ public class Controller {
         System.out.println("(3) - Add player");
         System.out.println("(4) - Remove player");
         System.out.println("(5) - Start new game");
+    }
+
+    private void calculateScoreboard() {
+        System.out.println("-SCOREBOARD-");
+        ArrayList<Player> sortedPlayers = new ArrayList<>(this.game.getPlayers());
+
+        Collections.sort(sortedPlayers, (Player p1, Player p2) -> {
+            if(p1.getScore() < p2.getScore()) return 1;
+            else if(p1.getScore() == p2.getScore()) return 0;
+            else return -1;
+        });
+
+        for(int i = 0; i < sortedPlayers.size(); i++) {
+            Player p = sortedPlayers.get(i);
+            System.out.println("# " + String.valueOf(i + 1) + ": " + p.getName() + ", " + p.getScore() + " points");
+        }
     }
 
     private void addPlayer() {
@@ -68,16 +86,19 @@ public class Controller {
         System.out.println("Goodbye, " + p.getName() + "!");
     }
 
-    private void startGame() {
-        System.out.println("Starting new game.\n--------------------");
-        this.game.start();
+    private void playRound(int round) {
+        System.out.println("--------------------\nRound " + round + " start!\n--------------------");
+        this.game.reset();
 
         ArrayList<Player> players = this.game.getPlayers();
         int numPlayers = players.size();
-        int turn = (Game.startingTurn) % numPlayers;
-        Game.startingTurn = turn;
-        boolean running = true;
 
+        int turn = Game.startingTurn;
+        Game.startingTurn = (turn + 1) % numPlayers;
+
+        int winningPlayer;
+
+        boolean running = true;
         while(running) {
             Player current = players.get(turn);
             ArrayList<Card> hand = current.getHand();
@@ -98,13 +119,25 @@ public class Controller {
 
             for(String s : line) {
                 int play = Integer.parseInt(s);
+
                 if(play == -1) {
-                    System.out.println("CALL!");
+                    winningPlayer = this.game.makeCall(turn);
+
+                    if(winningPlayer == turn) {
+                        System.out.println("Call success!  " + current.getName() + " wins.");
+                    } else {
+                        System.out.println("OH NO!  Wrong call, " + players.get(winningPlayer).getName() + " had a better hand.");
+                    }
+
                     running = false;
                     break;
-                } else indexes.add(play);
+                } else {
+                    indexes.add(play);
+                }
             }
             //---------------------------------------------------
+
+            if(!running) break;
 
             // ----Entering the player's pickup from the pile----
             System.out.println("-PICKUP-");
@@ -125,6 +158,32 @@ public class Controller {
             //---------------------------------------------------
         }
 
-        System.out.println("Game over!\n--------------------");
+        System.out.println("Round " + round + " over!");
+        calculateScoreboard();
+        for(Player p : this.game.eliminatePlayers()) {
+            System.out.println(p.getName() + " has been ELIMINATED!");
+        }
+    }
+
+    private void startNewGame() {
+        System.out.println("Starting new game.");
+
+        int round = 1;
+        Player maxScorePlayer;
+
+        while(this.game.getPlayers().size() > 1) {
+            playRound(round++);
+
+            for(int i = 0; i < this.game.getPlayers().size(); i++) {
+                Player p = this.game.getPlayers().get(i);
+                if(p.getScore() >= 150) {
+                    System.out.println(p.getName() + " has been ELIMINATED!");
+                    this.game.removePlayer(i);
+                    i = (i == 0) ? 0 : i - 1;
+                }
+            }
+        }
+
+        System.out.println("Game over! " + this.game.getPlayers().get(0).getName() + " is the WINNER!\n--------------------");
     }
 }

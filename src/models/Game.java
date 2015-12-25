@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Created by siva on 2015-12-24.
@@ -18,7 +19,7 @@ public class Game {
         pile = new Pile();
     }
 
-    public void start() {
+    public void reset() {
         deck.reset();
 
         for(Player p : players) {
@@ -46,9 +47,48 @@ public class Game {
         return true;
     }
 
-    public ArrayList<Player> getPlayers() {
-        return this.players;
+    public int makeCall(int playerIndex) {
+        int currentPlayerPoints = this.players.get(playerIndex).calculatePoints();
+        boolean successfulCall = true;
+        int winningPlayerIndex = playerIndex;
+
+        for(int i = 0; i < this.players.size(); i++) {
+            if(i != playerIndex && this.players.get(i).calculatePoints() < currentPlayerPoints) {
+                successfulCall = false;
+                winningPlayerIndex = i;
+            }
+        }
+
+        for(int i = 0; i < this.players.size(); i++) {
+            Player p = this.players.get(i);
+
+            if(i == playerIndex && !successfulCall) {
+                p.addScore(50);
+            } else if(i != winningPlayerIndex) {
+                p.addScore(p.calculatePoints());
+            }
+        }
+
+        return winningPlayerIndex;
     }
+
+    public ArrayList<Player> eliminatePlayers() {
+        ArrayList<Player> eliminated = new ArrayList<>();
+
+        this.players = this.players.stream()
+                .filter(p -> {
+                    if(p.getScore() < 150) {
+                        return true;
+                    } else {
+                        eliminated.add(p);
+                        return false;
+                    }
+                }).collect(Collectors.toCollection(ArrayList<Player>::new));
+
+        return eliminated;
+    }
+
+    public ArrayList<Player> getPlayers() { return this.players; }
 
     public Player removePlayer(int index) {
         return this.players.remove(index);
