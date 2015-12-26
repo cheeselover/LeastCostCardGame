@@ -47,15 +47,18 @@ public class Game {
         return true;
     }
 
-    public int makeCall(int playerIndex) {
-        int currentPlayerPoints = this.players.get(playerIndex).calculatePoints();
+    public ArrayList<Integer> makeCall(int playerIndex) {
+        int lowestPoints = this.players.get(playerIndex).calculatePoints();
         boolean successfulCall = true;
-        int winningPlayerIndex = playerIndex;
+        ArrayList<Integer> winningPlayers = new ArrayList<>();
 
         for(int i = 0; i < this.players.size(); i++) {
-            if(i != playerIndex && this.players.get(i).calculatePoints() < currentPlayerPoints) {
+            if(i != playerIndex && this.players.get(i).calculatePoints() < lowestPoints) {
                 successfulCall = false;
-                winningPlayerIndex = i;
+                winningPlayers.clear();
+                winningPlayers.add(i);
+            } else if(!successfulCall && this.players.get(i).calculatePoints() == lowestPoints) {
+                winningPlayers.add(i);
             }
         }
 
@@ -64,12 +67,12 @@ public class Game {
 
             if(i == playerIndex && !successfulCall) {
                 p.addScore(50);
-            } else if(i != winningPlayerIndex) {
+            } else if(!winningPlayers.contains(i)) {
                 p.addScore(p.calculatePoints());
             }
         }
 
-        return winningPlayerIndex;
+        return winningPlayers;
     }
 
     public ArrayList<Player> eliminatePlayers() {

@@ -3,7 +3,6 @@ import models.Game;
 import models.Player;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Scanner;
 
@@ -96,7 +95,7 @@ public class Controller {
         int turn = Game.startingTurn;
         Game.startingTurn = (turn + 1) % numPlayers;
 
-        int winningPlayer;
+        ArrayList<Integer> winningPlayers;
 
         boolean running = true;
         while(running) {
@@ -121,12 +120,12 @@ public class Controller {
                 int play = Integer.parseInt(s);
 
                 if(play == -1) {
-                    winningPlayer = this.game.makeCall(turn);
+                    winningPlayers = this.game.makeCall(turn);
 
-                    if(winningPlayer == turn) {
+                    if(winningPlayers.contains(turn)) {
                         System.out.println("Call success!  " + current.getName() + " wins.");
                     } else {
-                        System.out.println("OH NO!  Wrong call, " + players.get(winningPlayer).getName() + " had a better hand.");
+                        System.out.println("OH NO!  Wrong call, " + players.get(winningPlayers.get(0)).getName() + " had a better hand.");
                     }
 
                     running = false;
@@ -169,7 +168,6 @@ public class Controller {
         System.out.println("Starting new game.");
 
         int round = 1;
-        Player maxScorePlayer;
 
         while(this.game.getPlayers().size() > 1) {
             playRound(round++);
